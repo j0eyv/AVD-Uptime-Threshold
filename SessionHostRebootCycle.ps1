@@ -2,9 +2,13 @@
 $ResourceGroupName = "rg-avd"
 $HostPoolName = "hp-avd"
 $Location = "westeurope"
+$ThrottleLimit = 25 # Total machines being processed in parallel. Make sure you'll keep enough resources available in your environment to run this script.
 
 # Ensure the required modules are imported
 Import-Module Az.DesktopVirtualization
+
+# Start the script with a notification
+Write-Host "Starting session host reboot cycle for host pool: $HostPoolName in resource group: $ResourceGroupName with a limit of $ThrottleLimit VM's simultaneously"
 
 # Get all session host VMs in the host pool
 $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $ResourceGroupName -HostPoolName $HostPoolName
@@ -77,4 +81,4 @@ $sessionHosts | ForEach-Object -Parallel {
     Write-Host "Tag removed from $($vm.Name)"
 
     Write-Host "Completed cycle for $($vm.Name)"
-}
+} -ThrottleLimit $ThrottleLimit
