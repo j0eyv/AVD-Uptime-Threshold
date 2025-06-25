@@ -4,7 +4,7 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 
 ## Features
 
-- **Parallel Processing:** Processes all session hosts in the host pool concurrently for efficiency.
+- **Parallel Processing:** Processes all session hosts in the host pool concurrently for efficiency. The total number of VMs handled simultaneously is configurable via a parameter.
 - **Uptime Check:** Only targets VMs that have been running longer than a configurable threshold (default: 23 hours).
 - **Tagging:** Temporarily tags VMs as `ExcludeFromScaling=true` to exclude them from scaling operations.
 - **Drain Mode:** Puts session hosts into drain mode to prevent new user sessions.
@@ -19,7 +19,7 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 ## Usage
 
 1. **Configure Variables:**  
-   Edit the script to set your Azure resource group, host pool name, and location.
+   Edit the script to set your Azure resource group, host pool name, location and throttlelimit.
 
 2. **Exclude tag:**
    Edit the ExcludeFromScaling tag with your required exclusion tag. This one can be found in your scaling plan.
