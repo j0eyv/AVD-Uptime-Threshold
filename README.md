@@ -20,8 +20,11 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 
 2. **Exclude tag:**
    Edit the ExcludeFromScaling tag with your required exclusion tag. This one can be found in your scaling plan.
+
+3. **Uptime Threshold:**  
+  Change the value in the uptime check section to adjust how long a VM must be running before it is cycled. Default setting is 23 hours.
    
-3. **Run the Script:**  
+4. **Run the Script:**  
    Run the script in a PowerShell session that has the required Azure permissions. For better automation, it's recommended to integrate this into a pipeline.
 
    ```powershell
@@ -34,11 +37,6 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
   - `Az.DesktopVirtualization`
   - `Az.Compute`
 - Sufficient permissions to manage VMs and session hosts in the specified resource group and host pool.
-
-## Customization
-
-- **Uptime Threshold:**  
-  Change the value in the uptime check section to adjust how long a VM must be running before it is cycled. Default setting is 23 hours.
 
 ## Disclaimer
 
