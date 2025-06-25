@@ -13,6 +13,9 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 - **Tag Cleanup:** Removes the `ExcludeFromScaling` tag after the cycle is complete.
 - **Logging:** Provides detailed output for each step of the process.
 
+> [!NOTE]
+> The script continues running until all matching session hosts no longer have any active or disconnected user sessions. When using Microsoft-hosted agents—which have a 60-minute time limit—this may lead to a timeout. To avoid this, it is recommended to use self-hosted agents instead.
+
 ## Usage
 
 1. **Configure Variables:**  
