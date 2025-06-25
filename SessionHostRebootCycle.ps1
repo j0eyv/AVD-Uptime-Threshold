@@ -2,7 +2,7 @@
 $ResourceGroupName = "rg-avd"
 $HostPoolName = "hp-avd"
 $Location = "westeurope"
-$ThrottleLimit = 25 # Total machines being processed in parallel. Make sure you'll keep enough resources available in your environment to run this script.
+$ThrottleLimit = "25" # Total machines being processed in parallel. Make sure you'll keep enough resources available in your environment to run this script.
 
 # Ensure the required modules are imported
 Import-Module Az.DesktopVirtualization
