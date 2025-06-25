@@ -1,6 +1,6 @@
 # AVD Uptime Threshold
 
-This PowerShell script automates the maintenance cycle for Azure Virtual Desktop (AVD) session host virtual machines (VMs) in a specified host pool. It is designed to ensure session hosts are regularly rebooted after exceeding a defined uptime threshold, helping to maintain performance and stability.
+This PowerShell script automates the maintenance cycle for Azure Virtual Desktop (AVD) session host virtual machines (VMs) in a specified host pool. It is designed to ensure session hosts are regularly rebooted after exceeding a defined uptime threshold, helping to maintain performance and stability. In 24x7 environments, session hosts may continue running longer than intended due to users being load balanced across them, leading to extended uptimes.
 
 ## Features
 
@@ -38,7 +38,7 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 ## Customization
 
 - **Uptime Threshold:**  
-  Change the value in the uptime check section to adjust how long a VM must be running before it is cycled.
+  Change the value in the uptime check section to adjust how long a VM must be running before it is cycled. Default setting is 23 hours.
 
 ## Disclaimer
 
