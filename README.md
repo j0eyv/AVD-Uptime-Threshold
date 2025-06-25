@@ -19,7 +19,7 @@ This PowerShell script automates the maintenance cycle for Azure Virtual Desktop
 ## Usage
 
 1. **Configure Variables:**  
-   Edit the script to set your Azure resource group, host pool name, location and throttlelimit.
+   Edit the script to set your Azure resource group, host pool name, location and throttle limit.
 
 2. **Exclude tag:**
    Edit the ExcludeFromScaling tag with your required exclusion tag. This one can be found in your scaling plan.
