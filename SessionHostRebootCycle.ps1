@@ -33,23 +33,24 @@ $sessionHosts | ForEach-Object -Parallel {
         Write-Host "VM $($vm.Name) boot time: $bootTime, uptime: $([math]::Round($uptime.TotalHours,2)) hours"
         # MODIFY YOUR MAXIMUM UPTIME THRESHOLD
         if ($uptime.TotalHours -lt 23) {
-            Write-Host "Skipping $($vm.Name): uptime less than maximum hours."
+            Write-Host "Skipping $($vm.Name): uptime less than maximum allowed hours." # MODIFY YOUR MAXIMUM UPTIME THRESHOLD LOGGING
             return
         }
     } else {
         Write-Host "Skipping $($vm.Name): not running."
         return
     }
+
     Write-Host "VM $($vm.Name) has uptime $([math]::Round($uptime.TotalHours,2)) hours. Processing..."
 
-    # Add tag 'obsolete=true'
+    # Add tag Exclude tag'
     $tags = $vm.Tags
-    $tags["obsolete"] = "true"
-    $null = Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force
+    $tags["ExcludeFromScaling"] = "true" # Modify your tag name as needed
+    Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force | Out-Null
     Write-Host "Exclude from Scaling tag added to $($vm.Name)"
 
     # Set VM in drain mode
-    $null = Update-AzWvdSessionHost -ResourceGroupName $using:ResourceGroupName -HostPoolName $using:HostPoolName -Name $sessionHostName -AllowNewSession:$false
+    Update-AzWvdSessionHost -ResourceGroupName $using:ResourceGroupName -HostPoolName $using:HostPoolName -Name $sessionHostName -AllowNewSession:$false | Out-Null
     Write-Host "Set $sessionHostName to drain mode"
 
     # Wait for 0 active sessions
@@ -62,7 +63,7 @@ $sessionHosts | ForEach-Object -Parallel {
     Write-Host "No active sessions on $sessionHostName"
 
     # Shutdown VM (or reboot)
-    $null = Stop-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Force
+    Stop-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Force | Out-Null
     Write-Host "Shutdown initiated for $($vm.Name)"
 
     # Verify VM is stopped (deallocated)
@@ -74,10 +75,10 @@ $sessionHosts | ForEach-Object -Parallel {
     } while ($powerState -ne "VM deallocated")
     Write-Host "VM $($vm.Name) is now deallocated."
 
-    # Remove obsolete tag
-    $null = $tags.Remove("obsolete")
-    $null = Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force
-    Write-Host "Tag 'obsolete' removed from $($vm.Name)"
+    # Remove Exclude tag
+    $tags.Remove("ExcludeFromScaling") | Out-Null
+    Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force | Out-Null
+    Write-Host "Tag removed from $($vm.Name)"
 
     Write-Host "Completed cycle for $($vm.Name)"
 } -ThrottleLimit $ThrottleLimit
