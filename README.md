@@ -1,4 +1,4 @@
-# AVD Uptime Threshold
+# AVD Uptime Threshold (Rolling Drain Mode)
 
 This PowerShell script automates the maintenance cycle for Azure Virtual Desktop (AVD) session host virtual machines (VMs) in a specified host pool. It is designed to ensure session hosts are regularly rebooted after exceeding a defined uptime threshold, helping to maintain performance and stability. In 24x7 environments, session hosts may continue running longer than intended due to users being load balanced across them, leading to extended uptimes.
 
