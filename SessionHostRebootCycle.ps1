@@ -33,7 +33,7 @@ $sessionHosts | ForEach-Object -Parallel {
         Write-Host "VM $($vm.Name) boot time: $bootTime, uptime: $([math]::Round($uptime.TotalHours,2)) hours"
         # MODIFY YOUR MAXIMUM UPTIME THRESHOLD
         if ($uptime.TotalHours -lt 23) {
-            Write-Host "Skipping $($vm.Name): uptime less than maximum allowed hours." # MODIFY YOUR MAXIMUM UPTIME THRESHOLD LOGGING
+            Write-Host "Skipping $($vm.Name): uptime less than maximum allowed hours."
             return
         }
     } else {
