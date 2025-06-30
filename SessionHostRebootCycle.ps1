@@ -1,22 +1,18 @@
-# Variables - set these as needed
 $ResourceGroupName = "rg-avd"
 $HostPoolName = "hp-avd"
-$Location = "westeurope"
-$ThrottleLimit = "25" # Total machines being processed in parallel. Make sure you'll keep enough resources available in your environment to run this script.
+$ThrottleLimit = "5" # Total machines being processed in parallel. Make sure you'll keep enough resources available in your environment to run this script.
 
 # Ensure the required modules are imported
 Import-Module Az.DesktopVirtualization
-
-# Start the script with a notification
-Write-Host "Starting session host reboot cycle for host pool: $HostPoolName in resource group: $ResourceGroupName with a limit of $ThrottleLimit VM's simultaneously"
+Import-Module Az.Compute
 
 # Get all session host VMs in the host pool
 $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $ResourceGroupName -HostPoolName $HostPoolName
 
 $sessionHosts | ForEach-Object -Parallel {
-    # Import required modules in parallel runspaces
-    Import-Module Az.DesktopVirtualization
-    Import-Module Az.Compute
+    # Import required modules in parallel runspaces (defensive, but can be omitted if all runspaces have modules loaded)
+    Import-Module Az.DesktopVirtualization -ErrorAction SilentlyContinue
+    Import-Module Az.Compute -ErrorAction SilentlyContinue
 
     $vmResourceId = $_.ResourceId
     $vm = Get-AzVM -ResourceId $vmResourceId
@@ -46,11 +42,11 @@ $sessionHosts | ForEach-Object -Parallel {
     # Add tag Exclude tag'
     $tags = $vm.Tags
     $tags["ExcludeFromScaling"] = "true" # Modify your tag name as needed
-    Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force | Out-Null
+    $null = Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force
     Write-Host "Exclude from Scaling tag added to $($vm.Name)"
 
     # Set VM in drain mode
-    Update-AzWvdSessionHost -ResourceGroupName $using:ResourceGroupName -HostPoolName $using:HostPoolName -Name $sessionHostName -AllowNewSession:$false | Out-Null
+    $null = Update-AzWvdSessionHost -ResourceGroupName $using:ResourceGroupName -HostPoolName $using:HostPoolName -Name $sessionHostName -AllowNewSession:$false
     Write-Host "Set $sessionHostName to drain mode"
 
     # Wait for 0 active sessions
@@ -63,7 +59,7 @@ $sessionHosts | ForEach-Object -Parallel {
     Write-Host "No active sessions on $sessionHostName"
 
     # Shutdown VM (or reboot)
-    Stop-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Force | Out-Null
+    $null = Stop-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Force
     Write-Host "Shutdown initiated for $($vm.Name)"
 
     # Verify VM is stopped (deallocated)
@@ -77,7 +73,7 @@ $sessionHosts | ForEach-Object -Parallel {
 
     # Remove Exclude tag
     $tags.Remove("ExcludeFromScaling") | Out-Null
-    Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force | Out-Null
+    $null = Set-AzResource -ResourceId $vmResourceId -Tag $tags -Force
     Write-Host "Tag removed from $($vm.Name)"
 
     Write-Host "Completed cycle for $($vm.Name)"
